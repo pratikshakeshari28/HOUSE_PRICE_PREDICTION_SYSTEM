@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>House Price Predictor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="card">
+    <h2>House Price Predictor</h2>
+    <form id="predictForm">
+        <div class="input-group">
+            <label for="area">Area (Sq Ft)</label>
+            <input type="number" id="area" value="1500" required>
+        </div>
+
+        <div class="input-group">
+            <label for="bedrooms">Bedrooms</label>
+            <input type="number" id="bedrooms" value="3" min="1" required>
+        </div>
+
+        <div class="input-group">
+            <label for="bathrooms">Bathrooms</label>
+            <input type="number" id="bathrooms" value="2" min="1" required>
+        </div>
+
+        <div class="input-group">
+            <label for="floors">Floors</label>
+            <input type="number" id="floors" value="1" min="1" required>
+        </div>
+
+        <div class="input-group">
+            <label for="year_built">Year Built</label>
+            <input type="number" id="year_built" value="2005" required>
+        </div>
+
+        <div class="input-group">
+            <label for="location">Location</label>
+            <select id="location" required>
+                <option value="">Select Location</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label for="condition">Condition</label>
+            <select id="condition" required>
+                <option value="">Select Condition</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label for="garage">Garage</label>
+            <select id="garage" required>
+                <option value="">Select Garage</option>
+            </select>
+        </div>
+
+        <button type="submit" class="full-width">Predict Price</button>
+    </form>
+
+    <div id="result"></div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
