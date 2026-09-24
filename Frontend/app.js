@@ -1,21 +1,42 @@
-const API_BASE = "http://127.0.0.1:5000/api";
+// app.js
+
+// Use the API URL defined in config.js with a fallback to local host
+const API_BASE = (typeof CONFIG !== 'undefined' && CONFIG.API_BASE) 
+    ? CONFIG.API_BASE 
+    : "http://127.0.0.1:5000/api";
 
 async function loadOptions() {
     try {
         const response = await fetch(`${API_BASE}/options`);
+        
+        if (!response.ok) {
+            throw new Error(`Server returned status: ${response.status}`);
+        }
+
         const options = await response.json();
 
-        populateDropdown('location', options.locations);
-        populateDropdown('condition', options.conditions);
-        populateDropdown('garage', options.garages);
+        populateDropdown('location', options.locations, 'Select Location');
+        populateDropdown('condition', options.conditions, 'Select Condition');
+        populateDropdown('garage', options.garages, 'Select Garage');
     } catch (error) {
         console.error("Failed to load backend options:", error);
     }
 }
 
-function populateDropdown(elementId, items) {
+function populateDropdown(elementId, items, placeholder) {
     const select = document.getElementById(elementId);
-    select.innerHTML = items.map(item => `<option value="${item}">${item}</option>`).join('');
+    if (!select || !Array.isArray(items)) return;
+
+    select.innerHTML = ''; // Clear existing options
+    
+    // Add default placeholder option
+    const defaultOption = new Option(placeholder, "");
+    select.add(defaultOption);
+
+    // Safely add items without risk of HTML injection or broken quotes
+    items.forEach(item => {
+        select.add(new Option(item, item));
+    });
 }
 
 document.getElementById('predictForm').addEventListener('submit', async (e) => {
@@ -34,7 +55,6 @@ document.getElementById('predictForm').addEventListener('submit', async (e) => {
 
     const resultDiv = document.getElementById('result');
     
-    
     resultDiv.innerText = "Calculating price...";
     resultDiv.style.display = 'block';
 
@@ -45,15 +65,22 @@ document.getElementById('predictForm').addEventListener('submit', async (e) => {
             body: JSON.stringify(payload)
         });
 
+        if (!response.ok) {
+            throw new Error(`Server error (${response.status})`);
+        }
+
         const data = await response.json();
         
-        
-        resultDiv.innerText = `Estimated Price: $${data.price.toLocaleString()}`;
+        if (data.price !== undefined) {
+            resultDiv.innerText = `Estimated Price: $${data.price.toLocaleString()}`;
+        } else {
+            resultDiv.innerText = "Unable to compute price prediction.";
+        }
     } catch (error) {
-        
         resultDiv.innerText = "Error getting prediction!";
         console.error("Prediction Error:", error);
     }
 });
 
+// Initial launch call
 loadOptions();

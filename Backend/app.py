@@ -1,19 +1,27 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
+import os
 import pickle
-import pandas as pd
 from pathlib import Path
+from dotenv import load_dotenv
+from flask import Flask, jsonify, request
+from flask_cors import CORS
+import pandas as pd
+
+load_dotenv()
 
 app = Flask(__name__)
-CORS(app)  
+CORS(app)
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 MODEL_DIR = BASE_DIR / 'models'
+
+HOST = os.getenv('HOST', '127.0.0.1')
+PORT = int(os.getenv('PORT', 5000))
+DEBUG = os.getenv('FLASK_DEBUG', 'True').lower() == 'true'
 
 print("BASE_DIR:", BASE_DIR)
 print("MODEL_DIR:", MODEL_DIR)
 print("Model exists:", (MODEL_DIR / 'house_model.pkl').exists())
 print("Options exists:", (MODEL_DIR / 'options.pkl').exists())
-
 
 with open(MODEL_DIR / 'house_model.pkl', 'rb') as f:
     model = pickle.load(f)
@@ -29,7 +37,6 @@ def get_options():
 def predict():
     data = request.get_json()
     
-    
     input_data = pd.DataFrame([{
         'Area': float(data['Area']),
         'Bedrooms': int(data['Bedrooms']),
@@ -44,7 +51,7 @@ def predict():
     }])
 
     prediction = model.predict(input_data)[0]
-    return jsonify({'price': round(prediction, 2)})
+    return jsonify({'price': round(float(prediction), 2)})
 
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=5000, debug=True)
+    app.run(host=HOST, port=PORT, debug=DEBUG)
