@@ -5,8 +5,7 @@ import pandas as pd
 from pathlib import Path
 
 app = Flask(__name__)
-CORS(app)  # Enable Cross-Origin requests for frontend
-
+CORS(app)  
 BASE_DIR = Path(__file__).resolve().parent.parent
 MODEL_DIR = BASE_DIR / 'models'
 
@@ -15,7 +14,7 @@ print("MODEL_DIR:", MODEL_DIR)
 print("Model exists:", (MODEL_DIR / 'house_model.pkl').exists())
 print("Options exists:", (MODEL_DIR / 'options.pkl').exists())
 
-# Load Saved Artifacts
+
 with open(MODEL_DIR / 'house_model.pkl', 'rb') as f:
     model = pickle.load(f)
 
@@ -30,7 +29,7 @@ def get_options():
 def predict():
     data = request.get_json()
     
-    # Process inputs matching model feature structure
+    
     input_data = pd.DataFrame([{
         'Area': float(data['Area']),
         'Bedrooms': int(data['Bedrooms']),
